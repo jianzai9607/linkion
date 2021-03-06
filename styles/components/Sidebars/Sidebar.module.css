@@ -1,0 +1,32 @@
+.sidebar {
+  width: 280px;
+}
+
+.flexColumn {
+  flex-direction: column !important;
+  align-items: flex-start !important;
+}
+
+@media only screen and (max-width: 767px) {
+  .sidebar {
+    width: unset;
+    flex-wrap: initial !important;
+    position: absolute !important;
+    top: 0;
+    right: 0;
+    z-index: 1;
+  }
+
+  .expand {
+    height: 100%;
+  }
+
+  .flexColumn {
+    flex-direction: initial;
+    align-items: initial;
+  }
+
+  .sidebarToggleBtn {
+    align-self: flex-end;
+  }
+}
