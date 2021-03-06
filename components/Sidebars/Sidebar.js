@@ -1,62 +1,47 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Navbar, Nav, NavDropdown, Form, FormControl, Button } from 'react-bootstrap';
-import styles from '../../styles/components/Sidebars/Sidebar.module.css'
+import Link from "next/link";
+import { useRouter } from "next/router";
+import PropTypes from "prop-types";
+import { bubble as Menu } from "react-burger-menu"; // slide
+import React, { Children } from "react";
 
-export default function Sidebar() {
+export default function Sidebar({ children, activeClassName, ...props }) {
+  const { route } = useRouter();
+  const paths = [
+    {
+      id: 1,
+      path: "/",
+      name: "Home",
+    },
+    {
+      id: 2,
+      path: "/account/login",
+      name: "Login",
+    },
+    {
+      id: 3,
+      path: "/account/login?ads=asd",
+      name: "Loginasd",
+    },
+  ];
 
-  const [sidebarExpand, sidebarToggle] = useState(false);
-  const wrapperRef = useRef(null);
-
-  const useOutsideAlerter = (ref, isExpand) => {
-    useEffect(() => {
-      function handleClickOutside(event) {
-        if (ref.current && !ref.current.contains(event.target) && isExpand) {
-          sidebarToggle(false);
-        }
-      }
-
-      // Bind the event listener
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => {
-        // Unbind the event listener on clean up
-        document.removeEventListener("mousedown", handleClickOutside);
-      };
-    }, [ref, sidebarExpand]);
-  }
-
-  useOutsideAlerter(wrapperRef, sidebarExpand);
+  const pathLinks = paths.map((path) => {
+    return (
+      <Link key={path.id} href={path.path}>
+        <a className={`bm-item ${route == path.path ? "active" : ""}`} onClick={ () => props.sidebarToggle(false) }>
+          {path.name}
+        </a>
+      </Link>
+    );
+  });
 
   return (
-    <Navbar bg="light" variant="light" expanded={sidebarExpand} collapseOnSelect onToggle={isExpand => sidebarToggle(isExpand)} expand="md" className={[...(sidebarExpand ? [styles.expand] : []), styles.flexColumn, styles.sidebar]} ref={wrapperRef}>
-      <Navbar.Toggle aria-controls="responsive-navbar-nav" className={styles.sidebarToggleBtn} />
-      <Navbar.Collapse id="responsive-navbar-nav" className={styles.flexColumn}>
-        <Nav className="" className={styles.flexColumn}>
-          <Navbar.Brand href="#home">
-            <img
-              alt=""
-              src="/favicon.ico"
-              width="30"
-              height="30"
-              className="d-inline-block align-top"
-            />{' '}Portal
-          </Navbar.Brand>
-          <Nav.Link href="/">Home</Nav.Link>
-          <Nav.Link href="/portal/invoice_builder">Invoice Builder</Nav.Link>
-          <Nav.Link href="#features">Features</Nav.Link>
-          <Nav.Link href="#pricing">Pricing</Nav.Link>
-          <NavDropdown title="Dropdown" id="collasible-nav-dropdown">
-            <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
-            <NavDropdown.Divider />
-            <NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item>
-          </NavDropdown>
-        </Nav>
-        <Form inline>
-          <FormControl type="text" placeholder="Search" className="" />
-          <Button variant="outline-primary">Search</Button>
-        </Form>
-      </Navbar.Collapse>
-    </Navbar>
+    <Menu
+      isOpen={props.isOpen}
+      onClose={() => props.sidebarToggle(false)}
+      disableAutoFocus
+      customBurgerIcon={false}
+    >
+      {pathLinks}
+    </Menu>
   );
 }
